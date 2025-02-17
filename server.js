@@ -11,30 +11,24 @@ import resolvers from "./graphql/resolvers.js";
 
 dotenv.config();
 
-const isDevelopment = process.env.NODE_ENV !== "production"; // ✅ Detect development mode
-const allowedOrigins = ["http://localhost:5173"]; // ✅ Only allow React frontend in development
+const allowedOrigins = ["http://localhost:5173", "https://play-shelf.vercel.app"]; // ✅ Only allow React frontend in development
 
-const corsOptions = isDevelopment
-  ? {
-      origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error("Not allowed by CORS"));
-        }
-      },
-      credentials: true, // ✅ Allow cookies & authentication headers
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
     }
-  : {}; // ❌ No CORS needed in production
+  },
+  credentials: true, // ✅ Allow cookies & authentication headers
+}
 
 const app = express();
 app.use(express.json());
 
 // ✅ Apply CORS only in development
-if (isDevelopment) {
-  app.use(cors(corsOptions));
-}
-
+app.use(cors(corsOptions));
 app.use(graphqlUploadExpress());
 app.use(fileUpload({ useTempFiles: true }));
 
@@ -62,7 +56,7 @@ async function startServer() {
 
   server.applyMiddleware({
     app,
-    cors: isDevelopment ? corsOptions : false, // ✅ Apply CORS only in development
+    cors: corsOptions, // ✅ Apply CORS only in development
   });
 
   app.listen(process.env.PORT || 5050, () => {
