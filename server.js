@@ -11,11 +11,32 @@ import resolvers from "./graphql/resolvers.js";
 
 dotenv.config();
 
+const isDevelopment = process.env.NODE_ENV !== "production"; // ✅ Detect development mode
+const allowedOrigins = ["http://localhost:5173"]; // ✅ Only allow React frontend in development
+
+const corsOptions = isDevelopment
+  ? {
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
+      credentials: true, // ✅ Allow cookies & authentication headers
+    }
+  : {}; // ❌ No CORS needed in production
+
 const app = express();
 app.use(express.json());
-app.use(cors());
-app.use(graphqlUploadExpress()); // ✅ Enables GraphQL file uploads
-app.use(fileUpload({ useTempFiles: true })); // ✅ Enables Express file uploads
+
+// ✅ Apply CORS only in development
+if (isDevelopment) {
+  app.use(cors(corsOptions));
+}
+
+app.use(graphqlUploadExpress());
+app.use(fileUpload({ useTempFiles: true }));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, { dbName: "playshelf" })
@@ -33,12 +54,16 @@ cloudinary.v2.config({
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  uploads: false, // ✅ Disable built-in file uploads (use `graphql-upload` instead)
+  uploads: false, // ✅ Disable built-in file uploads (use `graphql-upload`)
 });
 
 async function startServer() {
   await server.start();
-  server.applyMiddleware({ app });
+
+  server.applyMiddleware({
+    app,
+    cors: isDevelopment ? corsOptions : false, // ✅ Apply CORS only in development
+  });
 
   app.listen(process.env.PORT || 5050, () => {
     console.log(`🚀 Server running at http://localhost:${process.env.PORT || 5050}${server.graphqlPath}`);
