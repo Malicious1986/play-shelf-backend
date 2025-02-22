@@ -21,7 +21,7 @@ const typeDefs = gql`
     addGame(name: String!, description: String, rating: Float, image: String, category: String): Game
     updateGame(id: ID!, rating: Float!): Game
     deleteGame(id: ID!): String
-    uploadImage(file: Upload!): String
+    uploadImage(file: Upload!): String!
   }
 `;
 

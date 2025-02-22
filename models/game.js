@@ -10,7 +10,8 @@ const gameSchema = new mongoose.Schema({
         max: 5 // ✅ Restricts rating to a max of 5
     },
     image: { type: String },
-    category: { type: String }
+    category: { type: String },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 });
 
 export default mongoose.model("Game", gameSchema);
