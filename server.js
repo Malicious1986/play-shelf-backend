@@ -62,7 +62,7 @@ app.get(
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true, // HTTPS only
-      sameSite: "Strict",
+      sameSite: "None",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
