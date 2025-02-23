@@ -72,9 +72,10 @@ app.get(
 
 // ✅ Refresh Token Route
 app.post("/refresh-token", (req, res) => {
+  console.log('here', req.cookies.refreshToken)
   const refreshToken = req.cookies.refreshToken;
 
-  if (!refreshToken) return res.status(401).json({ message: "No refresh token" });
+  if (!refreshToken) return res.status(401).json({ message: "No refresh tokenm" });
 
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
@@ -83,7 +84,7 @@ app.post("/refresh-token", (req, res) => {
     const newAccessToken = jwt.sign(
       { id: decoded.id, name: decoded.name, email: decoded.email },
       process.env.JWT_SECRET,
-      { expiresIn: "15m" }
+      { expiresIn: "1m" }
     );
 
     res.json({ accessToken: newAccessToken });

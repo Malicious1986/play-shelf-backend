@@ -11,7 +11,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "https://play-shelf-graphql-production.up.railway.app/auth/google/callback",
+      callbackURL: "/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -29,7 +29,7 @@ passport.use(
         const token = jwt.sign(
           { id: user._id, name: user.name, email: user.email },
           process.env.JWT_SECRET,
-          { expiresIn: "15m" }
+          { expiresIn: "1m" }
         );
 
         const refreshToken = jwt.sign(
