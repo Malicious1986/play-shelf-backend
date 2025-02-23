@@ -19,7 +19,7 @@ const typeDefs = gql`
 
   type Mutation {
     addGame(name: String!, description: String, rating: Float, image: String, category: String): Game
-    updateGame(id: ID!, rating: Float!): Game
+    updateGame(id: ID!, name: String, description: String, rating: Float, image: String, category: String): Game
     deleteGame(id: ID!): String
     uploadImage(file: Upload!): String!
   }

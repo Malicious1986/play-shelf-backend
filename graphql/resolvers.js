@@ -38,15 +38,25 @@ const resolvers = {
     },
 
     // ✅ Update game if it belongs to user
-    updateGame: async (_, { id, rating }, { user }) => {
+    updateGame: async (_, { id, name, description, image, category, rating }, { user }) => {
       if (!user) throw new AuthenticationError("Unauthorized");
-      const game = await Game.findOneAndUpdate(
+
+      // Build update object dynamically
+      const updateFields = {};
+      if (name !== undefined) updateFields.name = name;
+      if (description !== undefined) updateFields.description = description;
+      if (image !== undefined) updateFields.image = image;
+      if (category !== undefined) updateFields.category = category;
+      if (rating !== undefined) updateFields.rating = rating;
+
+      const updatedGame = await Game.findOneAndUpdate(
         { _id: id, userId: user.id },
-        { rating },
+        { $set: updateFields },
         { new: true }
       );
-      if (!game) throw new AuthenticationError("Game not found or unauthorized");
-      return game;
+
+      if (!updatedGame) throw new UserInputError("Game not found or unauthorized");
+      return updatedGame;
     },
 
     // ✅ Delete game if it belongs to user
