@@ -82,7 +82,7 @@ app.post("/refresh-token", (req, res) => {
 
     // ✅ Create new Access Token
     const newAccessToken = jwt.sign(
-      { id: decoded.id, name: decoded.name, email: decoded.email, avatar: user.avatar },
+      { id: decoded.id, name: decoded.name, email: decoded.email, avatar: decoded.avatar },
       process.env.JWT_SECRET,
       { expiresIn: "15m" }
     );
