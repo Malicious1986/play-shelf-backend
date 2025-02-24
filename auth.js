@@ -33,7 +33,7 @@ passport.use(
         );
 
         const refreshToken = jwt.sign(
-          { id: user._id, name: user.name, email: user.email },
+          { id: user._id, name: user.name, email: user.email, avatar: user.avatar, },
           process.env.JWT_REFRESH_SECRET,
           { expiresIn: "30d" }
         );

@@ -31,7 +31,7 @@ const corsOptions = {
 
 const app = express();
 app.use(express.json());
-app.use(cookieParser()); // ✅ Enable cookies
+app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(graphqlUploadExpress());
 app.use(fileUpload({ useTempFiles: true }));
@@ -75,7 +75,7 @@ app.get(
 app.post("/refresh-token", (req, res) => {
   const refreshToken = req.cookies.refreshToken;
 
-  if (!refreshToken) return res.status(401).json({ message: "No refresh tokenm" });
+  if (!refreshToken) return res.status(401).json({ message: "No refresh token" });
 
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
