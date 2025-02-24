@@ -7,11 +7,16 @@ const resolvers = {
   Upload: GraphQLUpload,
 
   Query: {
-    // ✅ Fetch only games belonging to the logged-in user
-    games: async (_, __, { user }) => {
+    games: async (_, { category, minRating }, { user }) => {
       if (!user) throw new AuthenticationError("Unauthorized");
-      return await Game.find({ userId: user.id });
+
+      const query = { userId: user.id };
+      if (category && category !== "All") query.category = category;
+      if (minRating !== undefined) query.rating = { $gte: minRating };
+
+      return await Game.find(query);
     },
+
 
     // ✅ Fetch single game (if it belongs to user)
     game: async (_, { id }, { user }) => {
@@ -24,8 +29,9 @@ const resolvers = {
 
   Mutation: {
     // ✅ Add game for the logged-in user
-    addGame: async (_, { name, description, image, category, rating }, { user }) => {
+    addGame: async (_, { addGameInput }, { user }) => {
       if (!user) throw new AuthenticationError("Unauthorized");
+      const { name, description, image, category, rating } = addGameInput;
       const newGame = new Game({
         name,
         description,
@@ -38,8 +44,10 @@ const resolvers = {
     },
 
     // ✅ Update game if it belongs to user
-    updateGame: async (_, { id, name, description, image, category, rating }, { user }) => {
+    updateGame: async (_, { updateGameInput }, { user }) => {
       if (!user) throw new AuthenticationError("Unauthorized");
+
+      const { id, name, description, image, category, rating } = updateGameInput;
 
       // Build update object dynamically
       const updateFields = {};

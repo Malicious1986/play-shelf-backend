@@ -5,10 +5,9 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import { ApolloServer } from "apollo-server-express";
-import fileUpload from "express-fileupload";
 import cloudinary from "cloudinary";
 import { graphqlUploadExpress } from "graphql-upload";
-import cookieParser from "cookie-parser"; // ✅ For handling cookies
+import cookieParser from "cookie-parser";
 import typeDefs from "./graphql/schema.js";
 import resolvers from "./graphql/resolvers.js";
 import "./auth.js";
