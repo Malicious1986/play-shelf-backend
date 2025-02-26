@@ -44,7 +44,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// ✅ Google OAuth
+// Google OAuth
 app.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -56,7 +56,7 @@ app.get(
   (req, res) => {
     const { token, refreshToken } = req.user;
 
-    // ✅ Set Refresh Token in HTTP-only cookie
+    // Set Refresh Token in HTTP-only cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true, // HTTPS only
@@ -70,7 +70,7 @@ app.get(
   }
 );
 
-// ✅ Refresh Token Route
+// Refresh Token Route
 app.post("/refresh-token", (req, res) => {
   const refreshToken = req.cookies.refreshToken;
 
@@ -79,7 +79,7 @@ app.post("/refresh-token", (req, res) => {
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
-    // ✅ Create new Access Token
+    // Create new Access Token
     const newAccessToken = jwt.sign(
       { id: decoded.id, name: decoded.name, email: decoded.email, avatar: decoded.avatar },
       process.env.JWT_SECRET,
@@ -92,7 +92,7 @@ app.post("/refresh-token", (req, res) => {
   }
 });
 
-// ✅ Logout Route (Clears Refresh Token)
+// Logout Route (Clears Refresh Token)
 app.post("/logout", (req, res) => {
   res.clearCookie("refreshToken", {
     httpOnly: true,
@@ -100,7 +100,7 @@ app.post("/logout", (req, res) => {
     sameSite: "Strict",
   });
 
-  // ✅ Respond with success instead of redirecting
+  // Respond with success instead of redirecting
   res.status(200).json({ message: "Logged out successfully" });
 });
 

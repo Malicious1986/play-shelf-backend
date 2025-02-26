@@ -30,15 +30,17 @@ const typeDefs = gql`
   }
 
   type Query {
-    games(category: String, minRating: Float): [Game!]!
     game(id: ID!): Game
+    games(category: String, minRating: Float): [Game!]!
+    sharedGames(shareId: ID!): [Game!]!
   }
 
   type Mutation {
     addGame(addGameInput: AddGameInput!): Game
-    updateGame(updateGameInput: UpdateGameInput!): Game
     deleteGame(id: ID!): String
+    generateShareLink: String!
     uploadImage(file: Upload!): String!
+    updateGame(updateGameInput: UpdateGameInput!): Game
   }
 `;
 
