@@ -31,8 +31,17 @@ const resolvers = {
     // Fetch games via shareable link (No Auth Required)
     sharedGames: async (_, { shareId }) => {
       const user = await User.findOne({ shareId });
-      if (!user) throw new Error("Invalid share link");
-      return await Game.find({ userId: user._id });
+
+      if (!user) {
+        throw new Error("Shared games not found.");
+      }
+
+      const games = await Game.find({ userId: user._id });
+
+      return {
+        username: user.name,
+        games,
+      };
     },
   },
 

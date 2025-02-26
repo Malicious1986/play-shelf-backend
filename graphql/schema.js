@@ -29,10 +29,15 @@ const typeDefs = gql`
     category: String
   }
 
+  type SharedGames {
+    username: String!
+    games: [Game!]!
+  }
+
   type Query {
     game(id: ID!): Game
     games(category: String, minRating: Float): [Game!]!
-    sharedGames(shareId: ID!): [Game!]!
+    sharedGames(shareId: ID!): SharedGames!
   }
 
   type Mutation {
