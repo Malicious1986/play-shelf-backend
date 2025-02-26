@@ -63,6 +63,7 @@ app.get(
       sameSite: "None",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       domain: process.env.COOKIE_DOMAIN,
+      path: "/",
     });
 
     res.redirect(`${process.env.FRONTEND_URL}/auth-success?token=${token}`);
