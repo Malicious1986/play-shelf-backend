@@ -56,7 +56,7 @@ const resolvers = {
         image,
         category,
         rating,
-        userId: user.id, // 👈 Attach user ID
+        userId: user.id,
       });
       return await newGame.save();
     },
