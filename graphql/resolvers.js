@@ -18,14 +18,19 @@ const resolvers = {
       return game;
     },
 
-    games: async (_, { category, minRating }, { user }) => {
+    games: async (_, { category, minRating, limit, offset }, { user }) => {
       if (!user) throw new AuthenticationError("Unauthorized");
 
       const query = { userId: user.id };
       if (category && category !== "All") query.category = category;
       if (minRating !== undefined) query.rating = { $gte: minRating };
+      const games = await Game.find(query).skip(offset).limit(limit);
+      const totalGames = await Game.countDocuments(query);
 
-      return await Game.find(query);
+      return {
+        games,
+        hasMore: totalGames > offset + games.length,
+      }
     },
 
     // Fetch games via shareable link (No Auth Required)

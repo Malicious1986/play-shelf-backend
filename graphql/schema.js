@@ -34,9 +34,14 @@ const typeDefs = gql`
     games: [Game!]!
   }
 
+  type GameListResponse {
+    games: [Game!]!
+    hasMore: Boolean!
+  }
+
   type Query {
     game(id: ID!): Game
-    games(category: String, minRating: Float): [Game!]!
+    games(category: String, minRating: Float, limit: Int, offset: Int): GameListResponse!
     sharedGames(shareId: ID!): SharedGames!
   }
 
