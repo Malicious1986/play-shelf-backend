@@ -3,7 +3,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from "../models/user.js";
 import cloudinary from "./cloudinary.js";
 import { config } from "./dotenv.js";
-import jwt from "jsonwebtoken";
+import { generateTokens } from "../utils/token.js";
 
 passport.use(
   new GoogleStrategy(
@@ -14,7 +14,7 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        let user = await User.findOne({ googleId: profile.id });
+        let user = await User.findOne({ email: profile.emails[0].value });
 
         if (!user) {
           const cloudinaryResult = await cloudinary.v2.uploader.upload(
@@ -32,31 +32,12 @@ passport.use(
             email: profile.emails[0].value,
             avatar: cloudinaryResult.secure_url,
           });
+        } else if (!user.googleId) {
+          user.googleId = profile.id;
+          await user.save();
         }
 
-        // Create Access Token
-        const token = jwt.sign(
-          {
-            id: user._id,
-            name: user.name,
-            email: user.email,
-            avatar: user.avatar,
-          },
-          config.jwtSecret,
-          { expiresIn: "15m" }
-        );
-
-        // Create Refresh Token
-        const refreshToken = jwt.sign(
-          {
-            id: user._id,
-            name: user.name,
-            email: user.email,
-            avatar: user.avatar,
-          },
-          config.jwtRefreshSecret,
-          { expiresIn: "30d" }
-        );
+        const { token, refreshToken } = generateTokens(user);
 
         return done(null, { user, token, refreshToken });
       } catch (error) {

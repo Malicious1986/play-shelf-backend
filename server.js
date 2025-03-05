@@ -14,6 +14,7 @@ import tokenRoutes from "./routes/token.js";
 import "./config/passport.js";
 import jwt from "jsonwebtoken";
 import { config } from "./config/dotenv.js";
+import passwordRoutes from "./routes/passwordReset.js";
 
 const app = express();
 app.use(express.json());
@@ -31,23 +32,27 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use("/auth", authRoutes);
 app.use("/", tokenRoutes);
+app.use("/password", passwordRoutes);
 
 connectDB();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) => {
+  context: ({ req, res }) => {
     const token = req.headers.authorization?.split(" ")[1];
+    let user = null;
+
     if (token) {
+
       try {
-        const decoded = jwt.verify(token, config.jwtSecret);
-        return { user: decoded };
+        user = jwt.verify(token, config.jwtSecret);
+
       } catch (err) {
         console.warn("Invalid token");
         
       }
     }
-    return { user: null };
+    return { user, res };
   },
 });
 async function startServer() {

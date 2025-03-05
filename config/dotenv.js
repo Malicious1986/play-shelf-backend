@@ -9,6 +9,7 @@ export const config = {
   callbackUrl: process.env.CALLBACK_URL,
   googleClientId: process.env.GOOGLE_CLIENT_ID,
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  resendApiKey: process.env.RESEND_API_KEY,
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME,
     apiKey: process.env.CLOUDINARY_API_KEY,
