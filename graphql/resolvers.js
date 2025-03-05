@@ -8,6 +8,7 @@ import { generateTokens } from "../utils/token.js";
 import { OpenAI } from "openai";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import sharp from "sharp";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -280,8 +281,8 @@ const resolvers = {
       return {
         success: true,
         message: "Game deleted successfully!",
-        id
-      }
+        id,
+      };
     },
 
     uploadImage: async (_, { file }, { user }) => {
@@ -290,17 +291,21 @@ const resolvers = {
       try {
         const { createReadStream } = await file;
         const stream = createReadStream();
-        // Upload to Cloudinary
+
+        const transformer = sharp()
+          .resize({ width: 800, withoutEnlargement: true })
+          .webp({ quality: 70 });
+
         const result = await new Promise((resolve, reject) => {
           const uploadStream = cloudinary.v2.uploader.upload_stream(
             { folder: "playshelf" },
             (error, result) => {
               if (error) reject(error);
-              resolve(result);
+              else resolve(result);
             }
           );
 
-          stream.pipe(uploadStream);
+          stream.pipe(transformer).pipe(uploadStream);
         });
 
         return {
@@ -308,7 +313,6 @@ const resolvers = {
           message: "Image uploaded successfully!",
           url: result.secure_url,
         };
-
       } catch (error) {
         return {
           success: false,
