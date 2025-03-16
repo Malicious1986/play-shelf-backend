@@ -64,7 +64,7 @@ const server = new ApolloServer({
         console.warn("Invalid token");
       }
     }
-    return { user, res };
+    return { user, res, req, server };
   },
 });
 async function startServer() {
